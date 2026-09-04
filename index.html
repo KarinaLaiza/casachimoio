@@ -289,11 +289,12 @@
 </section>
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualização ampliada de fotografia">
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualização ampliada">
   <button class="lightbox__close" id="lightboxClose" aria-label="Fechar">&times;</button>
-  <button class="lightbox__nav lightbox__nav--prev" id="lightboxPrev" aria-label="Fotografia anterior">&#10094;</button>
+  <button class="lightbox__nav lightbox__nav--prev" id="lightboxPrev" aria-label="Anterior">&#10094;</button>
   <img src="" alt="" class="lightbox__img" id="lightboxImg">
-  <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" aria-label="Fotografia seguinte">&#10095;</button>
+  <video class="lightbox__video" id="lightboxVideo" controls playsinline hidden></video>
+  <button class="lightbox__nav lightbox__nav--next" id="lightboxNext" aria-label="Seguinte">&#10095;</button>
   <p class="lightbox__counter" id="lightboxCounter"></p>
 </div>
 
