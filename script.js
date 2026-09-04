@@ -83,59 +83,89 @@
   }
 
   /* =========================================================
-     GALERIA / LIGHTBOX
-  ========================================================= */
-  const galleryItems = Array.from(document.querySelectorAll(".gallery__item"));
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = document.getElementById("lightboxImg");
-  const lightboxCounter = document.getElementById("lightboxCounter");
-  const btnClose = document.getElementById("lightboxClose");
-  const btnPrev = document.getElementById("lightboxPrev");
-  const btnNext = document.getElementById("lightboxNext");
+   GALERIA / LIGHTBOX
+========================================================= */
+const galleryItems = Array.from(document.querySelectorAll(".gallery__item"));
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxVideo = document.getElementById("lightboxVideo");
+const lightboxCounter = document.getElementById("lightboxCounter");
+const btnClose = document.getElementById("lightboxClose");
+const btnPrev = document.getElementById("lightboxPrev");
+const btnNext = document.getElementById("lightboxNext");
 
-  const images = galleryItems.map((item) => {
-    const img = item.querySelector("img");
-    return { src: img.getAttribute("src"), alt: img.getAttribute("alt") };
-  });
+const mediaItems = galleryItems.map((item) => {
+  if (item.dataset.type === "video") {
+    const video = item.querySelector("video");
+    return {
+      type: "video",
+      src: video.getAttribute("src"),
+      alt: item.getAttribute("aria-label") || ""
+    };
+  }
+  const img = item.querySelector("img");
+  return { type: "image", src: img.getAttribute("src"), alt: img.getAttribute("alt") };
+});
 
-  let currentIndex = 0;
+let currentIndex = 0;
 
-  function showImage(index) {
-    currentIndex = (index + images.length) % images.length;
-    const data = images[currentIndex];
+function stopVideo() {
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute("src");
+  lightboxVideo.load();
+  lightboxVideo.hidden = true;
+}
+
+function showMedia(index) {
+  currentIndex = (index + mediaItems.length) % mediaItems.length;
+  const data = mediaItems[currentIndex];
+
+  stopVideo();
+
+  if (data.type === "video") {
+    lightboxImg.hidden = true;
+    lightboxVideo.hidden = false;
+    lightboxVideo.setAttribute("src", data.src);
+    lightboxVideo.load();
+  } else {
+    lightboxVideo.hidden = true;
+    lightboxImg.hidden = false;
     lightboxImg.setAttribute("src", data.src);
     lightboxImg.setAttribute("alt", data.alt);
-    lightboxCounter.textContent = (currentIndex + 1) + " / " + images.length;
   }
 
-  function openLightbox(index) {
-    showImage(index);
-    lightbox.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-  }
+  lightboxCounter.textContent = (currentIndex + 1) + " / " + mediaItems.length;
+}
 
-  function closeLightbox() {
-    lightbox.classList.remove("is-open");
-    document.body.style.overflow = "";
-  }
+function openLightbox(index) {
+  showMedia(index);
+  lightbox.classList.add("is-open");
+  document.body.style.overflow = "hidden";
+}
 
-  galleryItems.forEach((item, index) => {
-    item.addEventListener("click", () => openLightbox(index));
-  });
+function closeLightbox() {
+  stopVideo();
+  lightbox.classList.remove("is-open");
+  document.body.style.overflow = "";
+}
 
-  btnClose.addEventListener("click", closeLightbox);
-  btnNext.addEventListener("click", () => showImage(currentIndex + 1));
-  btnPrev.addEventListener("click", () => showImage(currentIndex - 1));
+galleryItems.forEach((item, index) => {
+  item.addEventListener("click", () => openLightbox(index));
+});
 
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
+btnClose.addEventListener("click", closeLightbox);
+btnNext.addEventListener("click", () => showMedia(currentIndex + 1));
+btnPrev.addEventListener("click", () => showMedia(currentIndex - 1));
 
-  document.addEventListener("keydown", (e) => {
-    if (!lightbox.classList.contains("is-open")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowRight") showImage(currentIndex + 1);
-    if (e.key === "ArrowLeft") showImage(currentIndex - 1);
-  });
+lightbox.addEventListener("click", (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (!lightbox.classList.contains("is-open")) return;
+  if (e.key === "Escape") closeLightbox();
+  if (e.key === "ArrowRight") showMedia(currentIndex + 1);
+  if (e.key === "ArrowLeft") showMedia(currentIndex - 1);
+});
 
 })();
